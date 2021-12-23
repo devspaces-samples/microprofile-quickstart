@@ -1,6 +1,6 @@
 schemaVersion: 2.1.0
 metadata:
-  name: jboss-eap-quickstart
+  name: microprofile-quickstart
 attributes:
   che-theia.eclipse.org/sidecar-policy: mergeImage
 components:
