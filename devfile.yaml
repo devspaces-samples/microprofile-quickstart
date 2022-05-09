@@ -43,7 +43,14 @@ commands:
       commandLine: mvn clean install
       group:
         kind: build
-  - id: run
+  - id: launch-eap-server
+    exec:
+      component: tools
+      workingDir: ${PROJECTS_ROOT}
+      commandLine: $JBOSS_HOME/bin/openshift-launch.sh
+      group:
+        kind: run
+  - id: deploy
     exec:
       component: tools
       workingDir: ${PROJECTS_ROOT}/microprofile-quickstart/microprofile-fault-tolerance
