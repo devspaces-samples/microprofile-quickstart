@@ -1,18 +1,18 @@
 schemaVersion: 2.1.0
 metadata:
   name: microprofile-quickstart
-attributes:
-  che-theia.eclipse.org/sidecar-policy: mergeImage
 components:
   - name: tools
     container:
-      image: registry.redhat.io/jboss-eap-7/eap-xp3-openjdk11-openshift-rhel8:3.0
-      env:
-        - name: MAVEN_OPTS
-          value: "-Xmx200m -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss"
-        - name: JAVA_OPTS_APPEND
-          value: "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dsun.util.logging.disableCallerCheck=true"
+      image: registry.redhat.io/devspaces/udi-rhel8:3.0
       memoryLimit: 3Gi
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+  - name: eap-xp
+    container:
+      image: registry.redhat.io/jboss-eap-7/eap-xp3-openjdk11-openshift-rhel8:3.0
+      memoryLimit: 1Gi
       endpoints:
         - exposure: public
           name: coffee
@@ -24,43 +24,28 @@ components:
           protocol: http
           targetPort: 8080
           path: /microprofile-fault-tolerance/coffee/2/availability
-      volumeMounts:
-        - name: m2
-          path: /home/jboss/.m2
-        - name: gradle
-          path: /home/jboss/.gradle
   - name: m2
     volume:
       size: 1G
-  - name: gradle
-    volume:
-      size: 1G
 commands:
-  - id: build
+  - id: 1-build
     exec:
       component: tools
       workingDir: ${PROJECTS_ROOT}/microprofile-quickstart/microprofile-fault-tolerance
       commandLine: mvn clean install
       group:
         kind: build
-  - id: launch-eap-server
+  - id: 2-deploy
     exec:
-      component: tools
-      workingDir: ${PROJECTS_ROOT}
-      commandLine: $JBOSS_HOME/bin/openshift-launch.sh
-      group:
-        kind: run
-  - id: deploy
-    exec:
-      component: tools
+      component: eap-xp
       workingDir: ${PROJECTS_ROOT}/microprofile-quickstart/microprofile-fault-tolerance
       commandLine: mvn package wildfly:deploy && 
           echo 'The application was deployed, click on the endpoint from Workspace view to test it'
       group:
         kind: run
-  - id: update
+  - id: 3-update-existing-deployment
     exec:
-      component: tools
+      component: eap-xp
       workingDir: ${PROJECTS_ROOT}/microprofile-quickstart/microprofile-fault-tolerance
       commandLine: mvn clean install && sleep 2 && cp target/*.war /opt/eap/standalone/deployments/ROOT.war
       group:
