@@ -13,6 +13,9 @@ components:
     container:
       image: registry.redhat.io/jboss-eap-7/eap-xp3-openjdk11-openshift-rhel8:3.0
       memoryLimit: 1Gi
+      volumeMounts:
+        - name: m2
+          path: /home/jboss/.m2
       env:
         - name: JAVA_OPTS_APPEND
           value: '-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dsun.util.logging.disableCallerCheck=true'
