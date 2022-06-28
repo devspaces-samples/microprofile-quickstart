@@ -86,6 +86,9 @@
 
         <jboss.developer.drupal.url>http://rhdp-drupal.stage.redhat.com/</jboss.developer.drupal.url>
         <linkXRef>false</linkXRef>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <version.compiler.plugin>3.10.1</version.compiler.plugin>
     </properties>
 
     <dependencyManagement>
